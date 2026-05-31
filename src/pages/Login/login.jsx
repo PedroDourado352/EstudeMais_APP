@@ -1,4 +1,4 @@
-export function Login({ onEnter }) {
+export default function Login({ onEnter }) {
   const [email, setEmail] = useState("carlos@estudemais.app");
   const [pass, setPass] = useState("••••••••");
   return (

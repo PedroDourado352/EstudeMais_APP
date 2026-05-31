@@ -1,285 +1,70 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
-import {
-  Timer, Play, Pause, Square, BookOpen, LayoutDashboard, History as HistoryIcon,
-  Settings, LogOut, Flame, Clock, Target, Plus, Search, ArrowLeft, ArrowRight,
-  TrendingUp, Check, MoreHorizontal, ChevronRight,
-} from "lucide-react";
-import { BarChart, Bar, XAxis, ResponsiveContainer, Cell, Tooltip } from "recharts";
+import { useState } from "react";
 
-/* ------------------------------------------------------------------ */
-/*  Estilos (CSS próprio — controle total de fontes, cores, texturas) */
-/* ------------------------------------------------------------------ */
-const STYLES = `
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Hanken+Grotesk:wght@400;500;600;700&display=swap');
+import Login from "./pages/Login/Login";
+import Dashboard from "./pages/Dashboard/Dashboard";
+import TimerScreen from "./pages/Timer/Timer";
+import HistoryScreen from "./pages/History/History";
+import SubjectsScreen from "./pages/Subjects/Subjects";
 
-.em * { box-sizing: border-box; margin: 0; padding: 0; }
-.em {
-  --bg:#F6F2E9; --bg2:#EFEADD; --surface:#FFFFFF;
-  --ink:#1B241E; --soft:#6A746C; --line:#E6E0D2;
-  --pine:#1F4234; --pine2:#2C5C47; --pine-dark:#15271E;
-  --amber:#D98A3D; --amber-soft:#F3E2CB;
-  --sage:#5E8C6A; --slate:#5B7A8C; --clay:#C4623D; --plum:#7E6AA6;
-  --r:18px;
-  font-family:'Hanken Grotesk',sans-serif;
-  color:var(--ink); background:var(--bg);
-  -webkit-font-smoothing:antialiased;
-  height:100%; width:100%;
-}
-.em .display { font-family:'Fraunces',serif; font-optical-sizing:auto; letter-spacing:-0.01em; }
-.em .mono-num { font-family:'Fraunces',serif; font-variant-numeric:tabular-nums; letter-spacing:-0.02em; }
+import Sidebar from "./components/layout/Sidebar/Sidebar";
 
-/* ---------- App shell ---------- */
-.em-shell { display:flex; height:100vh; overflow:hidden; position:relative; }
-.em-bgtex { position:absolute; inset:0; pointer-events:none; z-index:0;
-  background:
-    radial-gradient(900px 500px at 88% -8%, rgba(217,138,61,.10), transparent 60%),
-    radial-gradient(700px 500px at -5% 110%, rgba(31,66,52,.10), transparent 60%);
-}
+import { SEED } from "./data/sessions";
 
-/* ---------- Sidebar ---------- */
-.em-side { width:250px; flex:none; background:var(--bg2); border-right:1px solid var(--line);
-  display:flex; flex-direction:column; padding:24px 16px; z-index:2; position:relative; }
-.em-brand { display:flex; align-items:center; gap:11px; padding:6px 10px 22px; }
-.em-logo { width:38px; height:38px; border-radius:11px; background:var(--pine); color:#F6F2E9;
-  display:grid; place-items:center; box-shadow:0 6px 16px rgba(31,66,52,.28); }
-.em-brand h1 { font-size:20px; font-weight:600; line-height:1; }
-.em-brand h1 b { color:var(--pine); font-weight:700; }
-.em-brand span { display:block; font-size:11px; color:var(--soft); margin-top:3px; letter-spacing:.04em; }
-.em-navlabel { font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--soft);
-  padding:14px 12px 8px; }
-.em-nav { display:flex; align-items:center; gap:12px; padding:11px 12px; border-radius:12px;
-  color:var(--soft); font-size:14.5px; font-weight:500; cursor:pointer; transition:.16s;
-  border:1px solid transparent; }
-.em-nav:hover { background:#fff; color:var(--ink); }
-.em-nav.on { background:var(--pine); color:#F6F2E9; box-shadow:0 8px 18px rgba(31,66,52,.22); }
-.em-side-foot { margin-top:auto; }
-.em-user { display:flex; align-items:center; gap:11px; padding:10px; border-radius:12px;
-  background:#fff; border:1px solid var(--line); }
-.em-ava { width:36px;height:36px;border-radius:10px; background:var(--amber); color:#fff;
-  display:grid;place-items:center;font-weight:700;font-size:14px; flex:none; }
-.em-user .nm { font-size:13.5px; font-weight:600; line-height:1.2; }
-.em-user .em-em { font-size:11.5px; color:var(--soft); }
-
-/* ---------- Main ---------- */
-.em-main { flex:1; overflow-y:auto; z-index:1; position:relative; }
-.em-pad { padding:34px 44px 60px; max-width:1080px; }
-.em-top { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:30px; gap:16px; }
-.em-top .eyebrow { font-size:12.5px; color:var(--soft); letter-spacing:.06em; margin-bottom:6px; }
-.em-h { font-family:'Fraunces',serif; font-size:34px; font-weight:600; line-height:1.05; }
-
-/* ---------- Buttons ---------- */
-.em-btn { border:none; cursor:pointer; font-family:inherit; font-weight:600; font-size:14.5px;
-  display:inline-flex; align-items:center; gap:9px; padding:12px 20px; border-radius:13px; transition:.16s; }
-.em-btn-p { background:var(--pine); color:#F6F2E9; box-shadow:0 10px 22px rgba(31,66,52,.26); }
-.em-btn-p:hover { background:var(--pine2); transform:translateY(-1px); }
-.em-btn-a { background:var(--amber); color:#21160a; box-shadow:0 10px 22px rgba(217,138,61,.3); }
-.em-btn-a:hover { filter:brightness(1.04); transform:translateY(-1px); }
-.em-btn-g { background:#fff; color:var(--ink); border:1px solid var(--line); }
-.em-btn-g:hover { border-color:#cfc8b6; }
-
-/* ---------- Cards ---------- */
-.em-card { background:var(--surface); border:1px solid var(--line); border-radius:var(--r);
-  box-shadow:0 1px 2px rgba(27,36,30,.03); }
-.em-grid { display:grid; gap:18px; }
-
-/* hero */
-.em-hero { grid-column:1/-1; background:linear-gradient(135deg,var(--pine) 0%,var(--pine-dark) 100%);
-  color:#F3EEE2; border-radius:22px; padding:30px 32px; position:relative; overflow:hidden;
-  display:flex; justify-content:space-between; align-items:center; gap:24px; }
-.em-hero .ring { position:absolute; right:-60px; top:-70px; width:280px; height:280px; border-radius:50%;
-  border:30px solid rgba(217,138,61,.16); }
-.em-hero .ring2 { position:absolute; right:30px; bottom:-110px; width:200px; height:200px; border-radius:50%;
-  border:18px solid rgba(255,255,255,.06); }
-.em-hero h3 { font-family:'Fraunces',serif; font-size:25px; font-weight:600; margin-bottom:6px; }
-.em-hero p { color:#C6D3C9; font-size:14.5px; max-width:330px; line-height:1.5; }
-
-/* stat */
-.em-stat { padding:20px 22px; }
-.em-stat .ico { width:38px;height:38px;border-radius:11px; display:grid;place-items:center; margin-bottom:14px; }
-.em-stat .v { font-family:'Fraunces',serif; font-size:30px; font-weight:600; line-height:1; }
-.em-stat .v small { font-size:16px; color:var(--soft); font-weight:500; margin-left:3px; }
-.em-stat .l { font-size:13px; color:var(--soft); margin-top:7px; }
-.em-stat .trend { font-size:12px; font-weight:600; color:var(--sage); display:inline-flex; gap:4px;
-  align-items:center; margin-top:9px; }
-
-.em-sec-h { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
-.em-sec-h h4 { font-family:'Fraunces',serif; font-size:18px; font-weight:600; }
-.em-link { font-size:13px; color:var(--pine); font-weight:600; cursor:pointer; display:inline-flex;
-  gap:4px; align-items:center; }
-
-/* subject rows */
-.em-subj { display:flex; align-items:center; gap:14px; padding:14px 0; border-top:1px solid var(--line); }
-.em-subj:first-child { border-top:none; }
-.em-dot { width:11px;height:11px;border-radius:50%; flex:none; }
-.em-subj .nm { font-weight:600; font-size:14.5px; }
-.em-track { height:7px; border-radius:5px; background:var(--bg2); overflow:hidden; margin-top:7px; }
-.em-track > i { display:block; height:100%; border-radius:5px; }
-.em-subj .tm { font-family:'Fraunces',serif; font-weight:600; font-size:15px; flex:none; }
-
-/* chips */
-.em-chip { padding:8px 15px; border-radius:11px; border:1px solid var(--line); background:#fff;
-  font-size:13.5px; font-weight:600; cursor:pointer; transition:.15s; display:inline-flex;
-  align-items:center; gap:8px; color:var(--soft); }
-.em-chip:hover { border-color:#cfc8b6; }
-.em-chip.on { background:var(--ink); color:#F6F2E9; border-color:var(--ink); }
-
-/* history */
-.em-group-l { font-size:12.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--soft);
-  margin:26px 0 10px; font-weight:600; }
-.em-row { display:flex; align-items:center; gap:16px; padding:16px 20px; }
-.em-row + .em-row { border-top:1px solid var(--line); }
-.em-row .tag { width:42px;height:42px;border-radius:12px; display:grid;place-items:center; flex:none; }
-.em-row .nm { font-weight:600; font-size:14.5px; }
-.em-row .meta { font-size:12.5px; color:var(--soft); margin-top:2px; }
-.em-row .dur { font-family:'Fraunces',serif; font-weight:600; font-size:17px; }
-
-/* ---------- Login ---------- */
-.em-login { display:flex; height:100vh; }
-.em-art { flex:1.05; background:linear-gradient(150deg,var(--pine) 0%,var(--pine-dark) 100%);
-  color:#F3EEE2; padding:54px; display:flex; flex-direction:column; position:relative; overflow:hidden; }
-.em-art .glow { position:absolute; width:420px;height:420px;border-radius:50%;
-  background:radial-gradient(circle, rgba(217,138,61,.34), transparent 65%); right:-120px; top:-80px; }
-.em-art .rings { position:absolute; left:-90px; bottom:-120px; width:360px; height:360px; }
-.em-art .rings i { position:absolute; border-radius:50%; border:1.5px solid rgba(255,255,255,.12); inset:0; }
-.em-art .rings i:nth-child(2){ inset:42px; } .em-art .rings i:nth-child(3){ inset:84px; }
-.em-art .rings i:nth-child(4){ inset:126px; border-color:rgba(217,138,61,.4); }
-.em-art-brand { display:flex; align-items:center; gap:13px; position:relative; z-index:2; }
-.em-art-brand .lg { width:44px;height:44px;border-radius:12px; background:rgba(255,255,255,.12);
-  display:grid;place-items:center; backdrop-filter:blur(4px); }
-.em-art-brand h1 { font-family:'Fraunces',serif; font-size:23px; font-weight:600; }
-.em-art-mid { margin-top:auto; position:relative; z-index:2; }
-.em-art-mid h2 { font-family:'Fraunces',serif; font-size:42px; font-weight:600; line-height:1.08;
-  letter-spacing:-0.015em; max-width:440px; }
-.em-art-mid p { color:#BFD0C4; font-size:16px; line-height:1.6; max-width:400px; margin-top:18px; }
-.em-art-stats { display:flex; gap:36px; margin-top:40px; position:relative; z-index:2; }
-.em-art-stats .v { font-family:'Fraunces',serif; font-size:28px; font-weight:600; }
-.em-art-stats .l { font-size:12.5px; color:#A9BDB0; margin-top:2px; }
-
-.em-form-wrap { flex:1; display:flex; align-items:center; justify-content:center; padding:40px; background:var(--bg); }
-.em-form { width:100%; max-width:380px; }
-.em-form .welcome { font-family:'Fraunces',serif; font-size:30px; font-weight:600; }
-.em-form .sub { color:var(--soft); font-size:14.5px; margin-top:8px; margin-bottom:30px; }
-.em-field { margin-bottom:16px; }
-.em-field label { display:block; font-size:13px; font-weight:600; margin-bottom:7px; color:var(--ink); }
-.em-input { width:100%; padding:13px 15px; border-radius:12px; border:1px solid var(--line);
-  background:#fff; font-family:inherit; font-size:14.5px; color:var(--ink); transition:.15s; }
-.em-input:focus { outline:none; border-color:var(--pine); box-shadow:0 0 0 3px rgba(31,66,52,.1); }
-.em-input::placeholder { color:#b3aD9c; }
-.em-forgot { text-align:right; font-size:13px; color:var(--pine); font-weight:600; cursor:pointer;
-  margin:-4px 0 22px; }
-.em-divider { display:flex; align-items:center; gap:14px; margin:22px 0; color:var(--soft); font-size:12.5px; }
-.em-divider:before, .em-divider:after { content:''; flex:1; height:1px; background:var(--line); }
-.em-social { width:100%; justify-content:center; }
-.em-foot-t { text-align:center; font-size:13.5px; color:var(--soft); margin-top:26px; }
-.em-foot-t b { color:var(--pine); cursor:pointer; }
-
-/* ---------- Focus mode ---------- */
-.em-focus { position:fixed; inset:0; z-index:50; background:linear-gradient(160deg,#15271E,#0E1B14);
-  color:#EFEAD9; display:flex; flex-direction:column; align-items:center; justify-content:center;
-  padding:40px; }
-.em-focus .fx-top { position:absolute; top:26px; left:30px; right:30px; display:flex; justify-content:space-between; align-items:center; }
-.em-focus .fx-back { display:inline-flex; align-items:center; gap:8px; color:#9FB3A6; font-size:14px;
-  background:none; border:none; cursor:pointer; font-family:inherit; }
-.em-focus .fx-subj { display:inline-flex; align-items:center; gap:9px; background:rgba(255,255,255,.07);
-  padding:8px 16px; border-radius:30px; font-size:14px; font-weight:600; }
-.em-ringwrap { position:relative; width:330px; height:330px; display:grid; place-items:center; }
-.em-ringwrap .lbl { position:absolute; top:64px; font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:#88A091; }
-.em-ringwrap .big { font-family:'Fraunces',serif; font-size:62px; font-weight:600; font-variant-numeric:tabular-nums; letter-spacing:-0.02em; }
-.em-ringwrap .state { position:absolute; bottom:70px; font-size:13px; color:#88A091; }
-.em-fx-ctrl { display:flex; gap:16px; margin-top:46px; }
-.em-fx-btn { width:62px;height:62px;border-radius:50%; border:none; cursor:pointer; display:grid;
-  place-items:center; transition:.15s; }
-.em-fx-btn.main { width:78px;height:78px; background:var(--amber); color:#21160a; box-shadow:0 12px 30px rgba(217,138,61,.4); }
-.em-fx-btn.main:hover { transform:scale(1.05); }
-.em-fx-btn.ghost { background:rgba(255,255,255,.08); color:#EFEAD9; }
-.em-fx-btn.ghost:hover { background:rgba(255,255,255,.16); }
-
-.rc-tip { background:#fff!important; border:1px solid var(--line)!important; border-radius:10px!important;
-  font-family:'Hanken Grotesk'!important; font-size:12.5px!important; box-shadow:0 8px 24px rgba(0,0,0,.08)!important; }
-
-@media (max-width: 900px){
-  .em-art { display:none; }
-  .em-side { display:none; }
-  .em-pad { padding:24px 18px 50px; }
-  .em-top { flex-direction:column; align-items:flex-start; }
-}
-`;
-
-/* ------------------------------------------------------------------ */
-/*  Dados                                                             */
-/* ------------------------------------------------------------------ */
-const SMAP = Object.fromEntries(SUBJECTS.map((s) => [s.id, s]));
-const DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
-const TODAY = 4; // Sexta
-
-
-/* helpers */
-
-
-/* ------------------------------------------------------------------ */
-/*  Login                                                            */
-/* ------------------------------------------------------------------ */
-
-
-/* ------------------------------------------------------------------ */
-/*  Sidebar                                                          */
-/* ------------------------------------------------------------------ */
-
-
-/* ------------------------------------------------------------------ */
-/*  Dashboard                                                        */
-/* ------------------------------------------------------------------ */
-
-
-/* ------------------------------------------------------------------ */
-/*  Tela do cronômetro (seleção + modo foco)                         */
-/* ------------------------------------------------------------------ */
-
-
-
-/* ------------------------------------------------------------------ */
-/*  Histórico                                                        */
-/* ------------------------------------------------------------------ */
-
-
-/* ------------------------------------------------------------------ */
-/*  Matérias (tela simples de apoio)                                 */
-/* ------------------------------------------------------------------ */
-
-
-/* ------------------------------------------------------------------ */
-/*  App                                                              */
-/* ------------------------------------------------------------------ */
-export default function App() {
+function App() {
   const [logged, setLogged] = useState(false);
   const [screen, setScreen] = useState("dash");
   const [sessions, setSessions] = useState(SEED);
 
   const saveSession = (subj, sec) => {
     setSessions((prev) => [
-      { id: Date.now(), subj, sec, dayIdx: TODAY, when: "Agora mesmo", group: "Hoje", note: "Sessão cronometrada" },
+      {
+        id: Date.now(),
+        subj,
+        sec,
+        dayIdx: 4,
+        when: "Agora mesmo",
+        group: "Hoje",
+        note: "Sessão cronometrada",
+      },
       ...prev,
     ]);
+
     setScreen("hist");
   };
 
   return (
     <div className="em">
-      <style>{STYLES}</style>
       {!logged ? (
         <Login onEnter={() => setLogged(true)} />
       ) : (
         <div className="em-shell">
-          <div className="em-bgtex" />
-          <Sidebar screen={screen} go={setScreen} onLogout={() => setLogged(false)} />
+          <Sidebar
+            screen={screen}
+            go={setScreen}
+            onLogout={() => setLogged(false)}
+          />
+
           <main className="em-main">
-            {screen === "dash" && <Dashboard sessions={sessions} go={setScreen} />}
-            {screen === "timer" && <TimerScreen onSave={saveSession} />}
-            {screen === "hist" && <HistoryScreen sessions={sessions} />}
-            {screen === "subj" && <SubjectsScreen sessions={sessions} />}
+            {screen === "dash" && (
+              <Dashboard sessions={sessions} go={setScreen} />
+            )}
+
+            {screen === "timer" && (
+              <TimerScreen onSave={saveSession} />
+            )}
+
+            {screen === "hist" && (
+              <HistoryScreen sessions={sessions} />
+            )}
+
+            {screen === "subj" && (
+              <SubjectsScreen sessions={sessions} />
+            )}
           </main>
         </div>
       )}
     </div>
   );
 }
+
+export default App;
