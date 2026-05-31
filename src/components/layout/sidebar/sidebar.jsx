@@ -1,3 +1,12 @@
+import {
+  Timer,
+  LayoutDashboard,
+  History as HistoryIcon,
+  BookOpen,
+  Settings,
+  LogOut,
+} from "lucide-react";
+
 export default function Sidebar({ screen, go, onLogout }) {
   const items = [
     { id: "dash", label: "Visão geral", icon: LayoutDashboard },

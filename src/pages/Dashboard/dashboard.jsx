@@ -1,7 +1,34 @@
 import { useMemo } from "react";
+
+import {
+  Clock,
+  Flame,
+  Target,
+  BookOpen,
+  Play,
+  TrendingUp,
+  ChevronRight,
+} from "lucide-react";
+
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  ResponsiveContainer,
+  Cell,
+  Tooltip,
+} from "recharts";
+
+
+const DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+const TODAY = 4;
+
+const SMAP = Object.fromEntries(
+  SUBJECTS.map((s) => [s.id, s])
+);
+
 import { SUBJECTS } from "../../data/subjects";
 import { fmtDur } from "../../utils/time";
-
 export default function Dashboard({ sessions, go }) {
   const totalSec = useMemo(() => sessions.reduce((a, s) => a + s.sec, 0), [sessions]);
   const avg = sessions.length ? Math.round(totalSec / sessions.length) : 0;

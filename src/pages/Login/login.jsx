@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { Timer, ArrowRight } from "lucide-react";
+
 export default function Login({ onEnter }) {
   const [email, setEmail] = useState("carlos@estudemais.app");
   const [pass, setPass] = useState("••••••••");
