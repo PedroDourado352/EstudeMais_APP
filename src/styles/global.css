@@ -205,6 +205,31 @@ body:has(.em[data-theme="dark"]) { background:#14130E; }
 .em-fx-btn.ghost { background:rgba(255,255,255,.08); color:#EFEAD9; }
 .em-fx-btn.ghost:hover { background:rgba(255,255,255,.16); }
 
+/* ---------- Kanban ---------- */
+.em-kanban { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; align-items:start; }
+.em-kb-col { background:var(--bg2); border:1px solid var(--line); border-radius:var(--r); padding:14px;
+  display:flex; flex-direction:column; gap:10px; min-height:140px; transition:.15s; }
+.em-kb-col.over { border-color:var(--pine); background:var(--surface); }
+.em-kb-head { display:flex; align-items:center; justify-content:space-between; padding:2px 4px 4px; }
+.em-kb-head h4 { font-family:'Fraunces',serif; font-size:16px; font-weight:600; }
+.em-kb-count { font-size:12px; font-weight:600; color:var(--soft); background:var(--surface);
+  border:1px solid var(--line); border-radius:20px; padding:2px 9px; }
+.em-kb-card { background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:12px 13px;
+  cursor:grab; box-shadow:0 1px 2px rgba(27,36,30,.04); display:flex; align-items:flex-start; gap:10px; }
+.em-kb-card:active { cursor:grabbing; }
+.em-kb-card .t { font-size:14px; font-weight:500; line-height:1.35; flex:1; }
+.em-kb-del { opacity:0; border:none; background:none; cursor:pointer; color:var(--soft); padding:2px;
+  border-radius:6px; flex:none; transition:.15s; }
+.em-kb-card:hover .em-kb-del { opacity:1; }
+.em-kb-del:hover { color:var(--clay); background:var(--bg2); }
+.em-kb-add { display:flex; gap:7px; margin-top:2px; }
+.em-kb-add input { flex:1; padding:9px 11px; border-radius:10px; border:1px solid var(--line);
+  background:var(--surface); font-family:inherit; font-size:13px; color:var(--ink); transition:.15s; }
+.em-kb-add input:focus { outline:none; border-color:var(--pine); }
+.em-kb-add button { border:none; background:var(--pine); color:#F6F2E9; border-radius:10px; width:34px;
+  cursor:pointer; display:grid; place-items:center; flex:none; transition:.15s; }
+.em-kb-add button:hover { background:var(--pine2); }
+
 .rc-tip { background:#fff!important; border:1px solid var(--line)!important; border-radius:10px!important;
   font-family:'Hanken Grotesk'!important; font-size:12.5px!important; box-shadow:0 8px 24px rgba(0,0,0,.08)!important; }
 

@@ -8,6 +8,7 @@ import {
   LogOut,
   PanelLeftClose,
   PanelLeft,
+  ClipboardList,
 } from "lucide-react";
 
 export default function Sidebar({ screen, go, onLogout }) {
@@ -26,6 +27,7 @@ export default function Sidebar({ screen, go, onLogout }) {
     { id: "timer", label: "Cronômetro", icon: Timer },
     { id: "hist", label: "Histórico", icon: HistoryIcon },
     { id: "subj", label: "Matérias", icon: BookOpen },
+    { id: "kanban", label: "Tarefas", icon: ClipboardList },
   ];
 
   return (

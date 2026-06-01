@@ -81,7 +81,6 @@ export default function SettingsScreen({ theme, setTheme }) {
           {[
             { id: "light", label: "Claro" },
             { id: "dark", label: "Escuro" },
-            { id: "system", label: "Sistema" },
           ].map((t) => (
             <div
               key={t.id}

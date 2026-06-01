@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard/dashboard";
 import TimerScreen from "./pages/Timer/timer";
 import HistoryScreen from "./pages/History/history";
 import SubjectsScreen from "./pages/Subjects/subjects";
+import KanbanScreen from "./pages/Kanban/kanban";
 import SettingsScreen from "./pages/Settings/settings";
 
 import Sidebar from "./components/layout/sidebar/sidebar";
@@ -80,6 +81,8 @@ function App() {
             {screen === "subj" && (
               <SubjectsScreen sessions={sessions} />
             )}
+
+            {screen === "kanban" && <KanbanScreen />}
 
             {screen === "settings" && (
               <SettingsScreen theme={theme} setTheme={setTheme} />
