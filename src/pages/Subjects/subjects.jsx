@@ -1,3 +1,8 @@
+import { Plus, BookOpen } from "lucide-react";
+
+import { SUBJECTS } from "../../data/subjects";
+import { fmtDur } from "../../utils/time";
+
 export default function SubjectsScreen({ sessions }) {
   const agg = SUBJECTS.map((s) => ({
     ...s,

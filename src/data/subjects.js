@@ -7,3 +7,5 @@ export const SUBJECTS = [
   { id: "ing", name: "Inglês", color: "#7E6AA6" }
 ];
 
+export const SMAP = Object.fromEntries(SUBJECTS.map((s) => [s.id, s]));
+

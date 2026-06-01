@@ -1,3 +1,9 @@
+import { useState, useMemo } from "react";
+import { BookOpen, MoreHorizontal } from "lucide-react";
+
+import { SUBJECTS, SMAP } from "../../data/subjects";
+import { fmtDur } from "../../utils/time";
+
 export default function HistoryScreen({ sessions }) {
   const [filter, setFilter] = useState("all");
   const list = filter === "all" ? sessions : sessions.filter((s) => s.subj === filter);

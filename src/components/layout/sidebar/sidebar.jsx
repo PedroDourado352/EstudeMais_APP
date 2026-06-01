@@ -27,7 +27,9 @@ export default function Sidebar({ screen, go, onLogout }) {
         </div>
       ))}
       <div className="em-navlabel">Conta</div>
-      <div className="em-nav"><Settings size={18} /> Configurações</div>
+      <div className={"em-nav" + (screen === "settings" ? " on" : "")} onClick={() => go("settings")}>
+        <Settings size={18} /> Configurações
+      </div>
       <div className="em-nav" onClick={onLogout}><LogOut size={18} /> Sair</div>
 
       <div className="em-side-foot">

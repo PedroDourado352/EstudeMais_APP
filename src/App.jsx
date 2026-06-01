@@ -1,12 +1,13 @@
 import { useState } from "react";
 
-import Login from "./pages/Login/Login";
-import Dashboard from "./pages/Dashboard/Dashboard";
-import TimerScreen from "./pages/Timer/Timer";
-import HistoryScreen from "./pages/History/History";
-import SubjectsScreen from "./pages/Subjects/Subjects";
+import Login from "./pages/Login/login";
+import Dashboard from "./pages/Dashboard/dashboard";
+import TimerScreen from "./pages/Timer/timer";
+import HistoryScreen from "./pages/History/history";
+import SubjectsScreen from "./pages/Subjects/subjects";
+import SettingsScreen from "./pages/Settings/settings";
 
-import Sidebar from "./components/layout/Sidebar/Sidebar";
+import Sidebar from "./components/layout/sidebar/sidebar";
 
 import { SEED } from "./data/sessions";
 
@@ -60,6 +61,8 @@ function App() {
             {screen === "subj" && (
               <SubjectsScreen sessions={sessions} />
             )}
+
+            {screen === "settings" && <SettingsScreen />}
           </main>
         </div>
       )}
