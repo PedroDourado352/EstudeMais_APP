@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import Login from "./pages/Login/login";
 import Dashboard from "./pages/Dashboard/dashboard";
@@ -15,6 +15,25 @@ function App() {
   const [logged, setLogged] = useState(false);
   const [screen, setScreen] = useState("dash");
   const [sessions, setSessions] = useState(SEED);
+  const [theme, setTheme] = useState(
+    () => localStorage.getItem("theme") || "light"
+  );
+  const [systemDark, setSystemDark] = useState(
+    () => window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
+
+  useEffect(() => {
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const onChange = (e) => setSystemDark(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  const dark = theme === "dark" || (theme === "system" && systemDark);
 
   const saveSession = (subj, sec) => {
     setSessions((prev) => [
@@ -34,7 +53,7 @@ function App() {
   };
 
   return (
-    <div className="em">
+    <div className="em" data-theme={dark ? "dark" : "light"}>
       {!logged ? (
         <Login onEnter={() => setLogged(true)} />
       ) : (
@@ -62,7 +81,9 @@ function App() {
               <SubjectsScreen sessions={sessions} />
             )}
 
-            {screen === "settings" && <SettingsScreen />}
+            {screen === "settings" && (
+              <SettingsScreen theme={theme} setTheme={setTheme} />
+            )}
           </main>
         </div>
       )}

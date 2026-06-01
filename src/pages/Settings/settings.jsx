@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { User, Target, Bell, Palette, Save } from "lucide-react";
 
-export default function SettingsScreen() {
+export default function SettingsScreen({ theme, setTheme }) {
   const [name, setName] = useState("Carlos Eduardo");
   const [email, setEmail] = useState("carlos@estudemais.app");
   const [goal, setGoal] = useState(12);
   const [notify, setNotify] = useState(true);
   const [sound, setSound] = useState(false);
-  const [theme, setTheme] = useState("light");
 
   return (
     <div className="em-pad">
